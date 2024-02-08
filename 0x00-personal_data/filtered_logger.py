@@ -29,7 +29,7 @@ def filter_datum(fields: List[str], redaction: str,
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter clased
+    """ Redacting Formatter class
         """
 
     REDACTION = "***"
@@ -42,7 +42,11 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """
-        Definition of filter_datum function that returns an obfuscated log message
+        redact the message of LogRecord instance
+        Args:
+        record (logging.LogRecord): LogRecord instance containing message
+        Return:
+            formatted string
         """
         message = super(RedactingFormatter, self).format(record)
         redacted = filter_datum(self.fields, self.REDACTION,
@@ -52,7 +56,7 @@ class RedactingFormatter(logging.Formatter):
 
 def get_logger() -> logging.Logger:
     """
-    Returned the logging.Logger object
+    Return a logging.Logger object
     """
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
