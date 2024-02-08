@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-Definition of filter_datum function that returns an obfuscated log message
+Return an obfuscated log message
+    Args:
+        fields (list): list of strings indicating fields to obfuscate
+        redaction (str): what the field will be obfuscated to
+        message (str): the log line to obfuscate
+        separator (str): the character separating the fields
 """
 from typing import List
 import re
@@ -15,12 +20,7 @@ PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """
-    Return an obfuscated log message
-    Args:
-        fields (list): list of strings indicating fields to obfuscate
-        redaction (str): what the field will be obfuscated to
-        message (str): the log line to obfuscate
-        separator (str): the character separating the fields
+    Definition of filter_datum function that returns an obfuscated log message
     """
     for field in fields:
         message = re.sub(field+'=.*?'+separator,
@@ -29,7 +29,7 @@ def filter_datum(fields: List[str], redaction: str,
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
+    """ Redacting Formatter clased
         """
 
     REDACTION = "***"
@@ -42,11 +42,7 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """
-        redact the message of LogRecord instance
-        Args:
-        record (logging.LogRecord): LogRecord instance containing message
-        Return:
-            formatted string
+        Definition of filter_datum function that returns an obfuscated log message
         """
         message = super(RedactingFormatter, self).format(record)
         redacted = filter_datum(self.fields, self.REDACTION,
@@ -56,7 +52,7 @@ class RedactingFormatter(logging.Formatter):
 
 def get_logger() -> logging.Logger:
     """
-    Return a logging.Logger object
+    Returned the logging.Logger object
     """
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
