@@ -1,46 +1,76 @@
 #!/usr/bin/env python3
-""" Authed modules
 """
-from flask import request
-from typing import List, TypeVar
+Contains Auth class which is the base class for
+all authentication methods
+"""
+from typing import List
+from typing import TypeVar
+from os import getenv
 
 
-class Auth():
+class Auth:
     """
-    Auth class
+    Base class for authentication.
     """
-
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        require_auth function
+        Finds for the path in the excluded_paths list.
+
+        Args:
+            path: The path to check.
+            excluded_paths: The list of paths to exclude.
+
+        Returns:
+            True if the path is not in the excluded_paths list.
+            True path is None or excluded_paths is None or empty.
+            False otherwise.
         """
-        if excluded_paths is None or excluded_paths == '':
+        if path is None or excluded_paths is None or excluded_paths == []:
             return True
-        if path is not None:
-            if path[len(path) - 1] is not '/':
-                path += '/'
-        if path is None:
-            return True
-        for item in excluded_paths:
-            asterisk = item.find("*")
-            if asterisk != -1 and len(path) >= len(item):
-                pathcpy = path[: asterisk]
-                if pathcpy == item[: asterisk]:
+        if path[-1] != '/':
+            path += '/'
+        for excluded_path in excluded_paths:
+            if excluded_path.endswith('*'):
+                if path.startswith(excluded_path[:-1]):
                     return False
-            elif path == item:
-                return False
-        return True
+        if path not in excluded_paths:
+            return True
+
+        return False
 
     def authorization_header(self, request=None) -> str:
         """
-        authorization_header function
+        Determines if a request has valid authorization headers.
+
+        Args:
+            request: The request to check.
+
+        Returns:
+            The authorization header if it exists.
+            None otherwise.
         """
         if request is None:
             return None
-        return request.headers.get('Authorization')
+        return request.headers.get('Authorization', None)
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
-        current_user function
+        Determines if a request has a valid user.
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+        Retrieves the session cookie from the request.
+
+        Args:
+            request: The request to check.
+
+        Returns:
+            The session cookie if it exists.
+            None otherwise.
+        """
+        if not request:
+            return None
+        _my_session_id = getenv('SESSION_NAME')
+        return request.cookies.get(_my_session_id, None)
